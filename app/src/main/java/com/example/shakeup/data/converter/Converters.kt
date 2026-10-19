@@ -1,6 +1,7 @@
 package com.example.shakeup.data.converter
 
 import androidx.room.TypeConverter
+import com.example.shakeup.domain.DismissChallengeType
 import com.example.shakeup.domain.ShakeSensitivity
 import java.time.DayOfWeek
 
@@ -32,6 +33,21 @@ class Converters {
             ShakeSensitivity.valueOf(data)
         } catch (e: Exception) {
             ShakeSensitivity.MEDIUM
+        }
+    }
+
+    @TypeConverter
+    fun fromDismissChallengeType(type: DismissChallengeType?): String {
+        return type?.name ?: DismissChallengeType.SHAKE.name
+    }
+
+    @TypeConverter
+    fun toDismissChallengeType(data: String?): DismissChallengeType {
+        if (data.isNullOrBlank()) return DismissChallengeType.SHAKE
+        return try {
+            DismissChallengeType.valueOf(data)
+        } catch (e: Exception) {
+            DismissChallengeType.SHAKE
         }
     }
 }

@@ -39,9 +39,9 @@
 - **Open Problems:** None.
 
 ## Phase 6: Settings screen
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `SettingsRepository.kt`, `SettingsUiState.kt`, `SettingsViewModel.kt`, `SettingsScreen.kt`, `Screen.kt`, `AlarmListScreen.kt`, `MainActivity.kt`, `strings.xml`, `PROGRESS.md`
+- **Tests Added:** Existing unit tests verified and passing.
 - **Open Problems:** None.
 
 ## Phase 7: Extra dismiss challenges

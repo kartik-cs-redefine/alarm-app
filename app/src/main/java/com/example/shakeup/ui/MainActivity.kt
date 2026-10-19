@@ -128,6 +128,7 @@ fun MainNavigation(
                 onLabelChange = { label -> viewModel.updateLabel(label) },
                 onToggleDay = { day -> viewModel.toggleDay(day) },
                 onShakeSensitivityChange = { sens -> viewModel.updateShakeSensitivity(sens) },
+                onChallengeTypeChange = { type -> viewModel.updateChallengeType(type) },
                 onToggleVibrate = { vib -> viewModel.toggleVibrate(vib) },
                 onSave = { viewModel.saveAlarm() },
                 onDelete = { viewModel.deleteAlarm() },

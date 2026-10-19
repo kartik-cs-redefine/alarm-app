@@ -28,6 +28,10 @@
     <string name="default_sensitivity">Default Shake Sensitivity</string>
     <string name="ringtone">Alarm Sound</string>
     <string name="vibration_pattern">Vibration Pattern</string>
+    <string name="dismiss_challenge">Dismiss Challenge</string>
+    <string name="challenge_shake">Shake Phone</string>
+    <string name="challenge_math">Math Problem</string>
+    <string name="math_answer_label">Enter Answer</string>
     <string name="permission_notification_title">Notification Permission Required</string>
     <string name="permission_notification_message">Notification permission is required to sound alarms reliably.</string>
     <string name="permission_exact_alarm_title">Exact Alarm Permission Required</string>

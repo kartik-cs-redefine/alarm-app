@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.shakeup.alarm.AlarmScheduler
 import com.example.shakeup.data.repository.AlarmRepository
 import com.example.shakeup.domain.Alarm
+import com.example.shakeup.domain.DismissChallengeType
 import com.example.shakeup.domain.ShakeSensitivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -40,7 +41,8 @@ class AlarmDetailViewModel @Inject constructor(
                         shakeSensitivity = alarm.shakeSensitivity,
                         vibrate = alarm.vibrate,
                         soundUri = alarm.soundUri,
-                        snoozeMinutes = alarm.snoozeMinutes
+                        snoozeMinutes = alarm.snoozeMinutes,
+                        challengeType = alarm.challengeType
                     )
                 }
             }
@@ -70,6 +72,10 @@ class AlarmDetailViewModel @Inject constructor(
         _uiState.update { it.copy(shakeSensitivity = sensitivity) }
     }
 
+    fun updateChallengeType(type: DismissChallengeType) {
+        _uiState.update { it.copy(challengeType = type) }
+    }
+
     fun toggleVibrate(vibrate: Boolean) {
         _uiState.update { it.copy(vibrate = vibrate) }
     }
@@ -87,7 +93,8 @@ class AlarmDetailViewModel @Inject constructor(
                 shakeSensitivity = state.shakeSensitivity,
                 vibrate = state.vibrate,
                 soundUri = state.soundUri,
-                snoozeMinutes = state.snoozeMinutes
+                snoozeMinutes = state.snoozeMinutes,
+                challengeType = state.challengeType
             )
             val savedId = repository.saveAlarm(alarm)
             val alarmToSchedule = alarm.copy(id = savedId)

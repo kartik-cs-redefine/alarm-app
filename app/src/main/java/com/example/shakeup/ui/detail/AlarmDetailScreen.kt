@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shakeup.R
+import com.example.shakeup.domain.DismissChallengeType
 import com.example.shakeup.domain.ShakeSensitivity
 import java.time.DayOfWeek
 
@@ -48,6 +49,7 @@ fun AlarmDetailScreen(
     onLabelChange: (String) -> Unit,
     onToggleDay: (DayOfWeek) -> Unit,
     onShakeSensitivityChange: (ShakeSensitivity) -> Unit,
+    onChallengeTypeChange: (DismissChallengeType) -> Unit,
     onToggleVibrate: (Boolean) -> Unit,
     onSave: () -> Unit,
     onDelete: () -> Unit,
@@ -146,29 +148,58 @@ fun AlarmDetailScreen(
                 }
             }
 
-            // Shake Sensitivity Segmented Buttons
+            // Dismiss Challenge Type Selector
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = stringResource(id = R.string.shake_sensitivity),
+                    text = stringResource(id = R.string.dismiss_challenge),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
-                    ShakeSensitivity.entries.forEachIndexed { index, sensitivity ->
-                        val labelRes = when (sensitivity) {
-                            ShakeSensitivity.EASY -> R.string.shake_sensitivity_low
-                            ShakeSensitivity.MEDIUM -> R.string.shake_sensitivity_medium
-                            ShakeSensitivity.HARD -> R.string.shake_sensitivity_high
+                    DismissChallengeType.entries.forEachIndexed { index, type ->
+                        val labelRes = when (type) {
+                            DismissChallengeType.SHAKE -> R.string.challenge_shake
+                            DismissChallengeType.MATH -> R.string.challenge_math
                         }
                         SegmentedButton(
-                            selected = uiState.shakeSensitivity == sensitivity,
-                            onClick = { onShakeSensitivityChange(sensitivity) },
+                            selected = uiState.challengeType == type,
+                            onClick = { onChallengeTypeChange(type) },
                             shape = SegmentedButtonDefaults.itemShape(
                                 index = index,
-                                count = ShakeSensitivity.entries.size
+                                count = DismissChallengeType.entries.size
                             )
                         ) {
                             Text(text = stringResource(id = labelRes))
+                        }
+                    }
+                }
+            }
+
+            // Shake Sensitivity Segmented Buttons (if challengeType == SHAKE)
+            if (uiState.challengeType == DismissChallengeType.SHAKE) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(id = R.string.shake_sensitivity),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+                        ShakeSensitivity.entries.forEachIndexed { index, sensitivity ->
+                            val labelRes = when (sensitivity) {
+                                ShakeSensitivity.EASY -> R.string.shake_sensitivity_low
+                                ShakeSensitivity.MEDIUM -> R.string.shake_sensitivity_medium
+                                ShakeSensitivity.HARD -> R.string.shake_sensitivity_high
+                            }
+                            SegmentedButton(
+                                selected = uiState.shakeSensitivity == sensitivity,
+                                onClick = { onShakeSensitivityChange(sensitivity) },
+                                shape = SegmentedButtonDefaults.itemShape(
+                                    index = index,
+                                    count = ShakeSensitivity.entries.size
+                                )
+                            ) {
+                                Text(text = stringResource(id = labelRes))
+                            }
                         }
                     }
                 }

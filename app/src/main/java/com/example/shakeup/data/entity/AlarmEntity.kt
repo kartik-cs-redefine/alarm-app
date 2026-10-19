@@ -3,6 +3,7 @@ package com.example.shakeup.data.entity
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.shakeup.domain.Alarm
+import com.example.shakeup.domain.DismissChallengeType
 import com.example.shakeup.domain.ShakeSensitivity
 import java.time.DayOfWeek
 
@@ -18,7 +19,8 @@ data class AlarmEntity(
     val shakeSensitivity: ShakeSensitivity,
     val vibrate: Boolean,
     val soundUri: String?,
-    val snoozeMinutes: Int
+    val snoozeMinutes: Int,
+    val challengeType: DismissChallengeType = DismissChallengeType.SHAKE
 ) {
     fun toDomain(): Alarm {
         return Alarm(
@@ -31,7 +33,8 @@ data class AlarmEntity(
             shakeSensitivity = shakeSensitivity,
             vibrate = vibrate,
             soundUri = soundUri,
-            snoozeMinutes = snoozeMinutes
+            snoozeMinutes = snoozeMinutes,
+            challengeType = challengeType
         )
     }
 
@@ -47,7 +50,8 @@ data class AlarmEntity(
                 shakeSensitivity = alarm.shakeSensitivity,
                 vibrate = alarm.vibrate,
                 soundUri = alarm.soundUri,
-                snoozeMinutes = alarm.snoozeMinutes
+                snoozeMinutes = alarm.snoozeMinutes,
+                challengeType = alarm.challengeType
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.example.shakeup.ui.detail
 
+import com.example.shakeup.domain.DismissChallengeType
 import com.example.shakeup.domain.ShakeSensitivity
 import java.time.DayOfWeek
 
@@ -14,5 +15,6 @@ data class AlarmDetailUiState(
     val vibrate: Boolean = true,
     val soundUri: String? = null,
     val snoozeMinutes: Int = 5,
+    val challengeType: DismissChallengeType = DismissChallengeType.SHAKE,
     val isSaved: Boolean = false
 )

@@ -12,7 +12,8 @@ data class Alarm(
     val shakeSensitivity: ShakeSensitivity = ShakeSensitivity.MEDIUM,
     val vibrate: Boolean = true,
     val soundUri: String? = null,
-    val snoozeMinutes: Int = 5
+    val snoozeMinutes: Int = 5,
+    val challengeType: DismissChallengeType = DismissChallengeType.SHAKE
 ) {
     val isRepeating: Boolean
         get() = daysOfWeek.isNotEmpty()
