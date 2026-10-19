@@ -11,11 +11,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -23,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.example.shakeup.R
 import com.example.shakeup.ui.detail.AlarmDetailScreen
 import com.example.shakeup.ui.detail.AlarmDetailViewModel
 import com.example.shakeup.ui.list.AlarmListScreen
@@ -89,6 +104,118 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainNavigation(
+    onRequestPermission: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    BoxWithConstraints(modifier = modifier) {
+        val isTwoPane = maxWidth >= 600.dp
+
+        if (isTwoPane) {
+            TwoPaneAdaptiveLayout(
+                onRequestPermission = onRequestPermission,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            SinglePaneNavigation(
+                onRequestPermission = onRequestPermission,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+private fun TwoPaneAdaptiveLayout(
+    onRequestPermission: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var selectedAlarmId by remember { mutableStateOf<Long?>(null) }
+    var showSettings by remember { mutableStateOf(false) }
+
+    val listViewModel: AlarmListViewModel = hiltViewModel()
+    val listUiState by listViewModel.uiState.collectAsStateWithLifecycle()
+
+    Row(modifier = modifier) {
+        // Left Pane: Alarm List
+        Box(modifier = Modifier.width(360.dp).fillMaxHeight()) {
+            AlarmListScreen(
+                uiState = listUiState,
+                onAddAlarm = {
+                    showSettings = false
+                    selectedAlarmId = 0L
+                },
+                onEditAlarm = { alarm ->
+                    showSettings = false
+                    selectedAlarmId = alarm.id
+                },
+                onToggleAlarm = { alarm, isEnabled -> listViewModel.toggleAlarm(alarm, isEnabled) },
+                onDeleteAlarm = { alarm -> listViewModel.deleteAlarm(alarm) },
+                onOpenSettings = { showSettings = true },
+                onRequestPermission = onRequestPermission
+            )
+        }
+
+        // Divider / Right Pane: Detail, Settings, or Placeholder
+        Surface(
+            modifier = Modifier.weight(1f).fillMaxHeight(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            if (showSettings) {
+                val settingsViewModel: SettingsViewModel = hiltViewModel()
+                val settingsUiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
+                SettingsScreen(
+                    uiState = settingsUiState,
+                    onSnoozeChange = { min -> settingsViewModel.updateSnoozeMinutes(min) },
+                    onSensitivityChange = { sens -> settingsViewModel.updateShakeSensitivity(sens) },
+                    onVibrateChange = { vib -> settingsViewModel.updateVibrate(vib) },
+                    onNavigateBack = { showSettings = false }
+                )
+            } else if (selectedAlarmId != null) {
+                val detailViewModel: AlarmDetailViewModel = hiltViewModel()
+                val alarmId = selectedAlarmId ?: 0L
+
+                LaunchedEffect(alarmId) {
+                    detailViewModel.loadAlarm(alarmId)
+                }
+
+                val detailUiState by detailViewModel.uiState.collectAsStateWithLifecycle()
+
+                AlarmDetailScreen(
+                    uiState = detailUiState,
+                    onTimeChange = { hour, min -> detailViewModel.updateTime(hour, min) },
+                    onLabelChange = { label -> detailViewModel.updateLabel(label) },
+                    onToggleDay = { day -> detailViewModel.toggleDay(day) },
+                    onShakeSensitivityChange = { sens -> detailViewModel.updateShakeSensitivity(sens) },
+                    onChallengeTypeChange = { type -> detailViewModel.updateChallengeType(type) },
+                    onToggleVibrate = { vib -> detailViewModel.toggleVibrate(vib) },
+                    onSave = {
+                        detailViewModel.saveAlarm()
+                        selectedAlarmId = null
+                    },
+                    onDelete = {
+                        detailViewModel.deleteAlarm()
+                        selectedAlarmId = null
+                    },
+                    onNavigateBack = { selectedAlarmId = null }
+                )
+            } else {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.no_alarms_message),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SinglePaneNavigation(
     onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
