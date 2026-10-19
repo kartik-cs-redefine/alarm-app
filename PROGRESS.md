@@ -24,7 +24,10 @@
 - **Open Problems:** None.
 
 ## Item 4: Steps Counter Dismiss Challenge
-- **Status:** NOT STARTED
+- **Status:** COMPLETED
+- **Files Changed:** `StepProcessor.kt`, `StepProcessorTest.kt`, `DismissChallengeType.kt`, `AlarmDetailScreen.kt`, `strings.xml`, `AndroidManifest.xml`, `PROGRESS.md`.
+- **Tests Added/Passing:** `StepProcessorTest` (25 unit tests total across 9 test files, all passing).
+- **Open Problems:** None.
 
 ## Item 5: Shake Thresholds Comment
 - **Status:** NOT STARTED
@@ -33,5 +36,6 @@
 - **Status:** NOT STARTED
 
 ## Needs human review
-- **AndroidManifest.xml**: Declares `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `POST_NOTIFICATIONS`, `USE_FULL_SCREEN_INTENT`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `windowSoftInputMode="adjustResize"`.
+- **AndroidManifest.xml**: Declares `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `POST_NOTIFICATIONS`, `USE_FULL_SCREEN_INTENT`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `ACTIVITY_RECOGNITION`, `windowSoftInputMode="adjustResize"`.
 - **Alarm scheduling & BootReceiver**: Uses `AlarmManager.setAlarmClock()` and reschedules all enabled alarms on `BOOT_COMPLETED` / `LOCKED_BOOT_COMPLETED`.
+- **Activity Recognition Permission**: Runtime permission for step counter sensor usage on Android 10+ (API 29+).
