@@ -31,7 +31,6 @@ class AlarmCalculatorTest {
             daysOfWeek = emptySet(),
             isEnabled = true
         )
-        // Now = 2026-01-01 07:00:00
         val now = LocalDateTime.of(2026, 1, 1, 7, 0).atZone(zoneId).toInstant().toEpochMilli()
         val expected = LocalDateTime.of(2026, 1, 1, 8, 30).atZone(zoneId).toInstant().toEpochMilli()
 
@@ -47,7 +46,6 @@ class AlarmCalculatorTest {
             daysOfWeek = emptySet(),
             isEnabled = true
         )
-        // Now = 2026-01-01 07:00:00
         val now = LocalDateTime.of(2026, 1, 1, 7, 0).atZone(zoneId).toInstant().toEpochMilli()
         val expected = LocalDateTime.of(2026, 1, 2, 6, 0).atZone(zoneId).toInstant().toEpochMilli()
 
@@ -57,14 +55,12 @@ class AlarmCalculatorTest {
 
     @Test
     fun repeatingAlarm_todayInFuture_triggersToday() {
-        // 2026-01-01 is THURSDAY
         val alarm = Alarm(
             hour = 9,
             minute = 0,
             daysOfWeek = setOf(DayOfWeek.THURSDAY, DayOfWeek.FRIDAY),
             isEnabled = true
         )
-        // Now = Thursday 2026-01-01 07:00:00
         val now = LocalDateTime.of(2026, 1, 1, 7, 0).atZone(zoneId).toInstant().toEpochMilli()
         val expected = LocalDateTime.of(2026, 1, 1, 9, 0).atZone(zoneId).toInstant().toEpochMilli()
 
@@ -74,19 +70,29 @@ class AlarmCalculatorTest {
 
     @Test
     fun repeatingAlarm_todayInPast_triggersNextMatchingDay() {
-        // 2026-01-01 is THURSDAY
         val alarm = Alarm(
             hour = 6,
             minute = 0,
             daysOfWeek = setOf(DayOfWeek.THURSDAY, DayOfWeek.SATURDAY),
             isEnabled = true
         )
-        // Now = Thursday 2026-01-01 07:00:00
         val now = LocalDateTime.of(2026, 1, 1, 7, 0).atZone(zoneId).toInstant().toEpochMilli()
-        // Next matching day is SATURDAY 2026-01-03 06:00:00
         val expected = LocalDateTime.of(2026, 1, 3, 6, 0).atZone(zoneId).toInstant().toEpochMilli()
 
         val actual = AlarmCalculator.calculateNextTriggerTimeMillis(alarm, now, zoneId)
         assertEquals(expected, actual)
+    }
+
+    @Test
+    fun snoozeTimeCalculation() {
+        val alarm = Alarm(
+            hour = 8,
+            minute = 0,
+            snoozeMinutes = 10
+        )
+        val now = LocalDateTime.of(2026, 1, 1, 8, 0).atZone(zoneId).toInstant().toEpochMilli()
+        val snoozeMillis = now + (alarm.snoozeMinutes * 60 * 1000L)
+        val expected = LocalDateTime.of(2026, 1, 1, 8, 10).atZone(zoneId).toInstant().toEpochMilli()
+        assertEquals(expected, snoozeMillis)
     }
 }

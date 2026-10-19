@@ -27,9 +27,9 @@
 - **Open Problems:** None.
 
 ## Phase 4: Strings cleanup
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `strings.xml`, `AlarmListScreen.kt`, `AlarmDetailScreen.kt`, `AlarmRingingScreen.kt`, `PROGRESS.md`
+- **Tests Added:** Existing unit tests verified and passing.
 - **Open Problems:** None.
 
 ## Phase 5: Snooze and repeat correctness
