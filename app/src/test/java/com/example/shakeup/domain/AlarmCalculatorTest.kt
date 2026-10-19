@@ -84,15 +84,42 @@ class AlarmCalculatorTest {
     }
 
     @Test
-    fun snoozeTimeCalculation() {
-        val alarm = Alarm(
-            hour = 8,
-            minute = 0,
-            snoozeMinutes = 10
-        )
+    fun snoozeReschedulesExactlyOnce() {
+        val alarm = Alarm(id = 1, hour = 8, minute = 0, snoozeMinutes = 10)
         val now = LocalDateTime.of(2026, 1, 1, 8, 0).atZone(zoneId).toInstant().toEpochMilli()
         val snoozeMillis = now + (alarm.snoozeMinutes * 60 * 1000L)
         val expected = LocalDateTime.of(2026, 1, 1, 8, 10).atZone(zoneId).toInstant().toEpochMilli()
         assertEquals(expected, snoozeMillis)
+    }
+
+    @Test
+    fun repeatingAlarmReschedulesForNextMatchingDayAfterDismiss() {
+        // Monday 2026-03-16 08:05:00 (after 08:00 alarm dismissed)
+        val alarm = Alarm(
+            id = 2,
+            hour = 8,
+            minute = 0,
+            daysOfWeek = setOf(DayOfWeek.MONDAY, DayOfWeek.WEDNESDAY),
+            isEnabled = true
+        )
+        val now = LocalDateTime.of(2026, 3, 16, 8, 5).atZone(zoneId).toInstant().toEpochMilli()
+        val nextTrigger = AlarmCalculator.calculateNextTriggerTimeMillis(alarm, now, zoneId)
+        val expectedWednesday = LocalDateTime.of(2026, 3, 18, 8, 0).atZone(zoneId).toInstant().toEpochMilli()
+        assertEquals(expectedWednesday, nextTrigger)
+    }
+
+    @Test
+    fun oneTimeAlarmDisablesItselfAfterDismiss() {
+        val alarm = Alarm(
+            id = 3,
+            hour = 8,
+            minute = 0,
+            daysOfWeek = emptySet(),
+            isEnabled = true
+        )
+        val dismissedAlarm = alarm.copy(isEnabled = false)
+        val now = LocalDateTime.of(2026, 3, 16, 8, 5).atZone(zoneId).toInstant().toEpochMilli()
+        val nextTrigger = AlarmCalculator.calculateNextTriggerTimeMillis(dismissedAlarm, now, zoneId)
+        assertNull(nextTrigger)
     }
 }

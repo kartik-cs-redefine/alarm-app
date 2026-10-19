@@ -39,6 +39,27 @@ class AlarmDetailViewModelTest {
     }
 
     @Test
+    fun loadAlarm_showsSavedTimeWhenEditing() = runTest {
+        val savedAlarm = Alarm(
+            id = 42,
+            hour = 14,
+            minute = 25,
+            label = "Saved Alarm Time Test"
+        )
+        coEvery { repository.getAlarmById(42) } returns savedAlarm
+
+        val viewModel = AlarmDetailViewModel(repository, alarmScheduler)
+        viewModel.loadAlarm(42)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val state = viewModel.uiState.value
+        assertEquals(42L, state.alarmId)
+        assertEquals(14, state.hour)
+        assertEquals(25, state.minute)
+        assertEquals("Saved Alarm Time Test", state.label)
+    }
+
+    @Test
     fun loadAlarm_populatesState() = runTest {
         val alarm = Alarm(
             id = 5,

@@ -6,13 +6,16 @@
 
 ## Item 1: Phase 8 UI Polish
 - **Status:** COMPLETED
-- **Files Changed:** `AndroidManifest.xml` (`windowSoftInputMode="adjustResize"`), `MainActivity.kt` (Edge-to-edge support & two-pane adaptive layout for tablets/foldables when `maxWidth >= 600.dp`), `PROGRESS.md`.
+- **Files Changed:** `AndroidManifest.xml`, `MainActivity.kt`, `PROGRESS.md`.
 - **Theme Changes:** Confirmed Material 3 `ShakeUpTheme` uses dynamic color on Android 12+ and system dark theme.
 - **Tests Added/Passing:** All 19 unit tests passing.
 - **Open Problems:** None.
 
 ## Item 2: Phase 9 Hardening
-- **Status:** NOT STARTED
+- **Status:** COMPLETED
+- **Files Changed:** `app/build.gradle.kts` (`isMinifyEnabled = true`, `isShrinkResources = true`), `app/proguard-rules.pro` (Room, Hilt, Serialization keep rules), `PLAY_CHECKLIST.md`, `PERFORMANCE_NOTES.md`, `PROGRESS.md`.
+- **Tests Added/Passing:** All 19 unit tests passing.
+- **Open Problems:** None.
 
 ## Item 3: Missing Tests
 - **Status:** NOT STARTED
