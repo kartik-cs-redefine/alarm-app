@@ -13,13 +13,13 @@ class ShakeDetectorTest {
         var dismissed = false
 
         val detector = ShakeDetector(
-            sensitivity = ShakeSensitivity.EASY, // requiredShakes = 10, threshold = 12.0
+            sensitivity = ShakeSensitivity.EASY, // requiredShakes = 10, threshold = 6.0
             onShakeProgress = { count, _ -> progressCount = count },
             onDismiss = { dismissed = true }
         )
 
         // Verify sensitivity settings
         assertEquals(10, ShakeSensitivity.EASY.requiredShakes)
-        assertEquals(12.0f, ShakeSensitivity.EASY.thresholdG, 0.01f)
+        assertEquals(6.0f, ShakeSensitivity.EASY.thresholdG, 0.01f)
     }
 }

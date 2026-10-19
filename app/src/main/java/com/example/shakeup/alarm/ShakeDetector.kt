@@ -5,16 +5,14 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import com.example.shakeup.domain.ShakeSensitivity
-import kotlin.math.sqrt
 
 class ShakeDetector(
-    private val sensitivity: ShakeSensitivity,
-    private val onShakeProgress: (currentShakes: Int, requiredShakes: Int) -> Unit,
-    private val onDismiss: () -> Unit
+    sensitivity: ShakeSensitivity,
+    onShakeProgress: (currentShakes: Int, requiredShakes: Int) -> Unit,
+    onDismiss: () -> Unit
 ) : SensorEventListener {
 
-    private var currentShakeCount = 0
-    private var lastShakeTime: Long = 0
+    private val processor = ShakeProcessor(sensitivity, onShakeProgress, onDismiss)
 
     fun start(sensorManager: SensorManager): Boolean {
         val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) ?: return false
@@ -27,28 +25,7 @@ class ShakeDetector(
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (event == null || event.sensor.type != Sensor.TYPE_ACCELEROMETER) return
-
-        val x = event.values[0]
-        val y = event.values[1]
-        val z = event.values[2]
-
-        // Calculate total acceleration magnitude
-        val acceleration = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-
-        // Check if acceleration exceeds sensitivity threshold
-        if (acceleration > sensitivity.thresholdG) {
-            val now = System.currentTimeMillis()
-            // Debounce shakes by at least 220ms
-            if (now - lastShakeTime >= 220) {
-                lastShakeTime = now
-                currentShakeCount++
-                onShakeProgress(currentShakeCount, sensitivity.requiredShakes)
-
-                if (currentShakeCount >= sensitivity.requiredShakes) {
-                    onDismiss()
-                }
-            }
-        }
+        processor.processAcceleration(event.values[0], event.values[1], event.values[2])
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
@@ -56,7 +33,6 @@ class ShakeDetector(
     }
 
     fun reset() {
-        currentShakeCount = 0
-        lastShakeTime = 0
+        processor.reset()
     }
 }

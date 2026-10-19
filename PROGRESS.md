@@ -15,9 +15,9 @@
 - **Open Problems:** None.
 
 ## Phase 2: Edit screen & BootReceiver
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `AlarmDetailScreen.kt`, `BootReceiver.kt`, `PROGRESS.md`
+- **Tests Added:** ViewModel and dao unit tests verified and passing.
 - **Open Problems:** None.
 
 ## Phase 3: Shake detection
