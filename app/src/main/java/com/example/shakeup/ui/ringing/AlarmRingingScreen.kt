@@ -101,7 +101,7 @@ fun AlarmRingingScreen(
                             style = MaterialTheme.typography.headlineMedium
                         )
                         Text(
-                            text = "Shakes",
+                            text = stringResource(id = R.string.shakes_label),
                             style = MaterialTheme.typography.labelLarge
                         )
                     }

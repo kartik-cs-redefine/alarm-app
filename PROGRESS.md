@@ -21,9 +21,9 @@
 - **Open Problems:** None.
 
 ## Phase 3: Shake detection
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `ShakeProcessor.kt`, `ShakeDetector.kt`, `ShakeSensitivity.kt`, `ShakeDetectorTest.kt`, `ShakeProcessorTest.kt`, `PROGRESS.md`
+- **Tests Added:** `ShakeProcessorTest` (below threshold ignored, debounce logic, exact dismiss count, gravity isolation).
 - **Open Problems:** None.
 
 ## Phase 4: Strings cleanup

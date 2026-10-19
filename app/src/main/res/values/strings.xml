@@ -19,6 +19,10 @@
     <string name="alarm_disabled">Disabled</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="vibrate_label">Vibrate</string>
+    <string name="once_label">Once</string>
+    <string name="no_alarms_message">No alarms set. Tap + to add an alarm.</string>
+    <string name="shakes_label">Shakes</string>
     <string name="permission_notification_title">Notification Permission Required</string>
     <string name="permission_notification_message">Notification permission is required to sound alarms reliably.</string>
     <string name="permission_exact_alarm_title">Exact Alarm Permission Required</string>

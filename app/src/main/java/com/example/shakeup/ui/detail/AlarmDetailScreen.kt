@@ -103,7 +103,6 @@ fun AlarmDetailScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Key ensures TimePicker re-initializes when saved alarm time is loaded from DB
             key(uiState.hour, uiState.minute) {
                 val timePickerState = rememberTimePickerState(
                     initialHour = uiState.hour,
@@ -182,7 +181,7 @@ fun AlarmDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Vibrate",
+                    text = stringResource(id = R.string.vibrate_label),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Switch(

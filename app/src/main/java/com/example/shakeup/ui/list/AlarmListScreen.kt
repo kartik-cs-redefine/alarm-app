@@ -35,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.shakeup.R
 import com.example.shakeup.domain.Alarm
-import java.time.DayOfWeek
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,8 +91,9 @@ fun AlarmListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(id = R.string.alarm_disabled),
-                        style = MaterialTheme.typography.bodyLarge
+                        text = stringResource(id = R.string.no_alarms_message),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             } else {
@@ -166,7 +166,7 @@ private fun AlarmItemCard(
 ) {
     val timeFormatted = String.format(Locale.getDefault(), "%02d:%02d", alarm.hour, alarm.minute)
     val daysFormatted = if (alarm.daysOfWeek.isEmpty()) {
-        "Once"
+        stringResource(id = R.string.once_label)
     } else {
         alarm.daysOfWeek.sortedBy { it.value }
             .joinToString(", ") { it.name.take(3) }
