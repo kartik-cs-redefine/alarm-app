@@ -45,9 +45,9 @@
 - **Open Problems:** None.
 
 ## Phase 7: Extra dismiss challenges
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `DismissChallengeType.kt`, `MathChallenge.kt`, `Alarm.kt`, `AlarmEntity.kt`, `Converters.kt`, `AlarmDetailUiState.kt`, `AlarmDetailViewModel.kt`, `AlarmDetailScreen.kt`, `MainActivity.kt`, `strings.xml`, `MathChallengeTest.kt`, `PROGRESS.md`
+- **Tests Added:** `MathChallengeTest`.
 - **Open Problems:** None.
 
 ## Phase 8: UI polish
