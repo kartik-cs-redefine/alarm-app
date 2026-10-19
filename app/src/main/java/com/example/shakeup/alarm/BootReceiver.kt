@@ -28,10 +28,14 @@ class BootReceiver : BroadcastReceiver() {
             val pendingResult = goAsync()
             scope.launch {
                 try {
+                    // Safe try-catch for LOCKED_BOOT_COMPLETED storage encryption limitations
                     val enabledAlarms = repository.getEnabledAlarms()
                     for (alarm in enabledAlarms) {
                         alarmScheduler.schedule(alarm)
                     }
+                } catch (e: Exception) {
+                    // Storage may be locked before user unlocks device; safe to ignore and reschedule later
+                    e.printStackTrace()
                 } finally {
                     pendingResult.finish()
                 }

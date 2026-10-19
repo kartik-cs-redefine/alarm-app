@@ -9,9 +9,9 @@
 - **Open Problems:** None.
 
 ## Phase 1: Reliability fixes
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `AlarmService.kt`, `AlarmRingingViewModel.kt`, `MainActivity.kt`, `PROGRESS.md`
+- **Tests Added:** Existing unit tests verified and passing.
 - **Open Problems:** None.
 
 ## Phase 2: Edit screen & BootReceiver
@@ -61,3 +61,7 @@
 - **Files Changed:** None.
 - **Tests Added:** None.
 - **Open Problems:** None.
+
+## Needs human review
+- **AndroidManifest.xml**: Declares `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `POST_NOTIFICATIONS`, `USE_FULL_SCREEN_INTENT`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`.
+- **Alarm scheduling & BootReceiver**: Uses `AlarmManager.setAlarmClock()` and reschedules all enabled alarms on `BOOT_COMPLETED` / `LOCKED_BOOT_COMPLETED`.

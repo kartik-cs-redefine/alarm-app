@@ -31,6 +31,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -57,16 +58,6 @@ fun AlarmDetailScreen(
         if (uiState.isSaved) {
             onNavigateBack()
         }
-    }
-
-    val timePickerState = rememberTimePickerState(
-        initialHour = uiState.hour,
-        initialMinute = uiState.minute,
-        is24Hour = true
-    )
-
-    LaunchedEffect(timePickerState.hour, timePickerState.minute) {
-        onTimeChange(timePickerState.hour, timePickerState.minute)
     }
 
     Scaffold(
@@ -112,7 +103,20 @@ fun AlarmDetailScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            TimePicker(state = timePickerState)
+            // Key ensures TimePicker re-initializes when saved alarm time is loaded from DB
+            key(uiState.hour, uiState.minute) {
+                val timePickerState = rememberTimePickerState(
+                    initialHour = uiState.hour,
+                    initialMinute = uiState.minute,
+                    is24Hour = true
+                )
+
+                LaunchedEffect(timePickerState.hour, timePickerState.minute) {
+                    onTimeChange(timePickerState.hour, timePickerState.minute)
+                }
+
+                TimePicker(state = timePickerState)
+            }
 
             OutlinedTextField(
                 value = uiState.label,
