@@ -24,6 +24,8 @@ class SettingsRepository @Inject constructor(
     private object Keys {
         val DEFAULT_SNOOZE_MINUTES = intPreferencesKey("default_snooze_minutes")
         val DEFAULT_SHAKE_SENSITIVITY = stringPreferencesKey("default_shake_sensitivity")
+        val DEFAULT_RINGTONE_URI = stringPreferencesKey("default_ringtone_uri")
+        val DEFAULT_VIBRATE = stringPreferencesKey("default_vibrate")
     }
 
     val defaultSnoozeMinutes: Flow<Int> = context.dataStore.data.map { prefs ->
@@ -39,6 +41,14 @@ class SettingsRepository @Inject constructor(
         }
     }
 
+    val defaultRingtoneUri: Flow<String?> = context.dataStore.data.map { prefs ->
+        prefs[Keys.DEFAULT_RINGTONE_URI]
+    }
+
+    val defaultVibrate: Flow<Boolean> = context.dataStore.data.map { prefs ->
+        prefs[Keys.DEFAULT_VIBRATE]?.toBoolean() ?: true
+    }
+
     suspend fun setDefaultSnoozeMinutes(minutes: Int) {
         context.dataStore.edit { prefs ->
             prefs[Keys.DEFAULT_SNOOZE_MINUTES] = minutes
@@ -48,6 +58,22 @@ class SettingsRepository @Inject constructor(
     suspend fun setDefaultShakeSensitivity(sensitivity: ShakeSensitivity) {
         context.dataStore.edit { prefs ->
             prefs[Keys.DEFAULT_SHAKE_SENSITIVITY] = sensitivity.name
+        }
+    }
+
+    suspend fun setDefaultRingtoneUri(uri: String?) {
+        context.dataStore.edit { prefs ->
+            if (uri != null) {
+                prefs[Keys.DEFAULT_RINGTONE_URI] = uri
+            } else {
+                prefs.remove(Keys.DEFAULT_RINGTONE_URI)
+            }
+        }
+    }
+
+    suspend fun setDefaultVibrate(vibrate: Boolean) {
+        context.dataStore.edit { prefs ->
+            prefs[Keys.DEFAULT_VIBRATE] = vibrate.toString()
         }
     }
 }

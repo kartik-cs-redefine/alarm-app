@@ -28,6 +28,8 @@ import com.example.shakeup.ui.detail.AlarmDetailViewModel
 import com.example.shakeup.ui.list.AlarmListScreen
 import com.example.shakeup.ui.list.AlarmListViewModel
 import com.example.shakeup.ui.navigation.Screen
+import com.example.shakeup.ui.settings.SettingsScreen
+import com.example.shakeup.ui.settings.SettingsViewModel
 import com.example.shakeup.ui.theme.ShakeUpTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -107,6 +109,7 @@ fun MainNavigation(
                 onEditAlarm = { alarm -> navController.navigate(Screen.AlarmDetail(alarm.id)) },
                 onToggleAlarm = { alarm, isEnabled -> viewModel.toggleAlarm(alarm, isEnabled) },
                 onDeleteAlarm = { alarm -> viewModel.deleteAlarm(alarm) },
+                onOpenSettings = { navController.navigate(Screen.Settings) },
                 onRequestPermission = onRequestPermission
             )
         }
@@ -128,6 +131,19 @@ fun MainNavigation(
                 onToggleVibrate = { vib -> viewModel.toggleVibrate(vib) },
                 onSave = { viewModel.saveAlarm() },
                 onDelete = { viewModel.deleteAlarm() },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Screen.Settings> {
+            val viewModel: SettingsViewModel = hiltViewModel()
+            val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+            SettingsScreen(
+                uiState = uiState,
+                onSnoozeChange = { minutes -> viewModel.updateSnoozeMinutes(minutes) },
+                onSensitivityChange = { sens -> viewModel.updateShakeSensitivity(sens) },
+                onVibrateChange = { vib -> viewModel.updateVibrate(vib) },
                 onNavigateBack = { navController.popBackStack() }
             )
         }

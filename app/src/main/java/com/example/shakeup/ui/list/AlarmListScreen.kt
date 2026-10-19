@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,6 +46,7 @@ fun AlarmListScreen(
     onEditAlarm: (Alarm) -> Unit,
     onToggleAlarm: (Alarm, Boolean) -> Unit,
     onDeleteAlarm: (Alarm) -> Unit,
+    onOpenSettings: () -> Unit,
     onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -52,7 +54,15 @@ fun AlarmListScreen(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(id = R.string.app_name)) }
+                title = { Text(text = stringResource(id = R.string.app_name)) },
+                actions = {
+                    IconButton(onClick = onOpenSettings) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = stringResource(id = R.string.settings_title)
+                        )
+                    }
+                }
             )
         },
         floatingActionButton = {

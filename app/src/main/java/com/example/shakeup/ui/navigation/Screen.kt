@@ -10,4 +10,7 @@ sealed interface Screen : NavKey {
 
     @Serializable
     data class AlarmDetail(val alarmId: Long = 0L) : Screen
+
+    @Serializable
+    data object Settings : Screen
 }

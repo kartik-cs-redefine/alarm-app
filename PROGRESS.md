@@ -33,9 +33,9 @@
 - **Open Problems:** None.
 
 ## Phase 5: Snooze and repeat correctness
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `AlarmCalculatorTest.kt`, `PROGRESS.md`
+- **Tests Added:** `snoozeTimeCalculation` unit test.
 - **Open Problems:** None.
 
 ## Phase 6: Settings screen
