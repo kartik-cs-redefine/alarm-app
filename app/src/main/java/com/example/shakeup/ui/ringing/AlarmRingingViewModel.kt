@@ -2,6 +2,7 @@ package com.example.shakeup.ui.ringing
 
 import android.content.Context
 import android.content.Intent
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shakeup.alarm.AlarmService
@@ -18,14 +19,29 @@ import javax.inject.Inject
 @HiltViewModel
 class AlarmRingingViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val repository: AlarmRepository
+    private val repository: AlarmRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+
+    private val alarmId: Long = savedStateHandle.get<Long>(AlarmService.EXTRA_ALARM_ID) ?: -1L
 
     private val _uiState = MutableStateFlow(AlarmRingingUiState())
     val uiState: StateFlow<AlarmRingingUiState> = _uiState.asStateFlow()
 
     init {
+        loadAlarmDetails()
         observeActiveAlarm()
+    }
+
+    private fun loadAlarmDetails() {
+        if (alarmId != -1L) {
+            viewModelScope.launch {
+                val alarm = repository.getAlarmById(alarmId)
+                if (alarm != null) {
+                    _uiState.update { it.copy(alarm = alarm, requiredShakes = alarm.shakeSensitivity.requiredShakes) }
+                }
+            }
+        }
     }
 
     private fun observeActiveAlarm() {
@@ -39,8 +55,6 @@ class AlarmRingingViewModel @Inject constructor(
                             requiredShakes = activeData.requiredShakes
                         )
                     }
-                } else {
-                    _uiState.update { it.copy(isDismissed = true) }
                 }
             }
         }
@@ -58,5 +72,6 @@ class AlarmRingingViewModel @Inject constructor(
             action = AlarmService.ACTION_DISMISS_ALARM
         }
         context.startService(intent)
+        _uiState.update { it.copy(isDismissed = true) }
     }
 }

@@ -21,7 +21,6 @@ import androidx.core.app.NotificationCompat
 import com.example.shakeup.R
 import com.example.shakeup.data.repository.AlarmRepository
 import com.example.shakeup.domain.Alarm
-import com.example.shakeup.domain.AlarmCalculator
 import com.example.shakeup.domain.ShakeSensitivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -56,6 +55,9 @@ class AlarmService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        // Start foreground immediately with a fallback notification to prevent ANR
+        startForeground(NOTIFICATION_ID, createFallbackNotification())
+
         if (intent == null) return START_NOT_STICKY
 
         val action = intent.action
@@ -63,14 +65,14 @@ class AlarmService : Service() {
 
         when (action) {
             ACTION_START_ALARM -> {
-                if (alarmId != -1L) {
-                    serviceScope.launch {
-                        val alarm = repository.getAlarmById(alarmId)
-                        if (alarm != null) {
-                            startAlarm(alarm)
-                        } else {
-                            stopSelf()
-                        }
+                serviceScope.launch {
+                    val alarm = if (alarmId != -1L) repository.getAlarmById(alarmId) else null
+                    if (alarm != null) {
+                        startAlarm(alarm)
+                    } else {
+                        // Fallback generic alarm if DB lookup fails
+                        val fallback = Alarm(id = alarmId, hour = 0, minute = 0, label = "Alarm")
+                        startAlarm(fallback)
                     }
                 }
             }
@@ -95,7 +97,8 @@ class AlarmService : Service() {
         )
 
         val notification = createRingingNotification(alarm)
-        startForeground(NOTIFICATION_ID, notification)
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(NOTIFICATION_ID, notification)
 
         startRingtone(alarm.soundUri)
         if (alarm.vibrate) {
@@ -174,12 +177,12 @@ class AlarmService : Service() {
         stopAudioAndVibration()
         serviceScope.launch {
             currentAlarm?.let { alarm ->
-                if (alarm.isRepeating) {
-                    // Reschedule repeating alarm for next trigger day
-                    alarmScheduler.schedule(alarm)
-                } else {
-                    // One-time alarm is disabled after firing
-                    repository.saveAlarm(alarm.copy(isEnabled = false))
+                if (alarm.id > 0) {
+                    if (alarm.isRepeating) {
+                        alarmScheduler.schedule(alarm)
+                    } else {
+                        repository.saveAlarm(alarm.copy(isEnabled = false))
+                    }
                 }
             }
             _activeAlarmState.value = null
@@ -191,32 +194,31 @@ class AlarmService : Service() {
         stopAudioAndVibration()
         serviceScope.launch {
             currentAlarm?.let { alarm ->
-                // Schedule temporary snooze alarm
-                val snoozeMillis = System.currentTimeMillis() + (alarm.snoozeMinutes * 60 * 1000)
-                val snoozedAlarm = alarm.copy(isEnabled = true)
-                // Schedule exact alarm for snoozeMillis
-                val intent = Intent(this@AlarmService, AlarmReceiver::class.java).apply {
-                    action = AlarmScheduler.ACTION_TRIGGER_ALARM
-                    putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
+                if (alarm.id > 0) {
+                    val snoozeMillis = System.currentTimeMillis() + (alarm.snoozeMinutes * 60 * 1000)
+                    val intent = Intent(this@AlarmService, AlarmReceiver::class.java).apply {
+                        action = AlarmScheduler.ACTION_TRIGGER_ALARM
+                        putExtra(AlarmScheduler.EXTRA_ALARM_ID, alarm.id)
+                    }
+                    val pendingIntent = PendingIntent.getBroadcast(
+                        this@AlarmService,
+                        alarm.id.toInt(),
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
+                    val showIntent = Intent(this@AlarmService, com.example.shakeup.ui.MainActivity::class.java)
+                    val showPendingIntent = PendingIntent.getActivity(
+                        this@AlarmService,
+                        alarm.id.toInt(),
+                        showIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    alarmManager.setAlarmClock(
+                        android.app.AlarmManager.AlarmClockInfo(snoozeMillis, showPendingIntent),
+                        pendingIntent
+                    )
                 }
-                val pendingIntent = PendingIntent.getBroadcast(
-                    this@AlarmService,
-                    alarm.id.toInt(),
-                    intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                val alarmManager = getSystemService(Context.ALARM_SERVICE) as android.app.AlarmManager
-                val showIntent = Intent(this@AlarmService, com.example.shakeup.ui.MainActivity::class.java)
-                val showPendingIntent = PendingIntent.getActivity(
-                    this@AlarmService,
-                    alarm.id.toInt(),
-                    showIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-                )
-                alarmManager.setAlarmClock(
-                    android.app.AlarmManager.AlarmClockInfo(snoozeMillis, showPendingIntent),
-                    pendingIntent
-                )
             }
             _activeAlarmState.value = null
             stopSelf()
@@ -256,6 +258,17 @@ class AlarmService : Service() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(channel)
         }
+    }
+
+    private fun createFallbackNotification(): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Alarm Ringing")
+            .setContentText("Shake to dismiss")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setOngoing(true)
+            .build()
     }
 
     private fun createRingingNotification(alarm: Alarm): Notification {
