@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ShakeUp</string>
+    <string name="alarm_label_default">Alarm</string>
+    <string name="alarm_ringing_title">Alarm Ringing!</string>
+    <string name="shake_to_dismiss_hint">Shake your device to dismiss</string>
+    <string name="dismiss_button">Dismiss</string>
+    <string name="snooze_button">Snooze</string>
+    <string name="add_alarm">Add Alarm</string>
+    <string name="edit_alarm">Edit Alarm</string>
+    <string name="delete_alarm">Delete Alarm</string>
+    <string name="alarm_time">Time</string>
+    <string name="alarm_days">Repeat Days</string>
+    <string name="shake_sensitivity">Shake Sensitivity</string>
+    <string name="shake_sensitivity_low">Low</string>
+    <string name="shake_sensitivity_medium">Medium</string>
+    <string name="shake_sensitivity_high">High</string>
+    <string name="alarm_enabled">Enabled</string>
+    <string name="alarm_disabled">Disabled</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="permission_notification_title">Notification Permission Required</string>
+    <string name="permission_notification_message">Notification permission is required to sound alarms reliably.</string>
+    <string name="permission_exact_alarm_title">Exact Alarm Permission Required</string>
+    <string name="permission_exact_alarm_message">Exact alarm permission is needed so your alarms go off at the precise time.</string>
+</resources>
