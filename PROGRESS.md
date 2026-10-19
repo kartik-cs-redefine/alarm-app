@@ -18,7 +18,10 @@
 - **Open Problems:** None.
 
 ## Item 3: Missing Tests
-- **Status:** NOT STARTED
+- **Status:** COMPLETED
+- **Files Changed:** `AlarmDetailViewModelTest.kt` (saved time edit test), `AlarmCalculatorTest.kt` (snooze once, repeating next matching day, one-time auto-disable tests), `AlarmRingingViewModelTest.kt` (initial null activeAlarmState test), `PROGRESS.md`.
+- **Tests Added/Passing:** 24 unit tests across 8 test files, all passing.
+- **Open Problems:** None.
 
 ## Item 4: Steps Counter Dismiss Challenge
 - **Status:** NOT STARTED

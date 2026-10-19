@@ -31,6 +31,8 @@
     <string name="dismiss_challenge">Dismiss Challenge</string>
     <string name="challenge_shake">Shake Phone</string>
     <string name="challenge_math">Math Problem</string>
+    <string name="challenge_steps">Step Counter</string>
+    <string name="steps_to_dismiss_hint">Walk %1$d steps to dismiss</string>
     <string name="math_answer_label">Enter Answer</string>
     <string name="battery_optimization_title">Battery Optimization &amp; OEM Settings</string>
     <string name="battery_optimization_desc">To ensure alarms ring reliably, please disable battery optimization and allow background execution for ShakeUp in your device settings.</string>

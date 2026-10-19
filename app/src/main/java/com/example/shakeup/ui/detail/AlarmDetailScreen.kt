@@ -160,6 +160,7 @@ fun AlarmDetailScreen(
                         val labelRes = when (type) {
                             DismissChallengeType.SHAKE -> R.string.challenge_shake
                             DismissChallengeType.MATH -> R.string.challenge_math
+                            DismissChallengeType.STEPS -> R.string.challenge_steps
                         }
                         SegmentedButton(
                             selected = uiState.challengeType == type,
