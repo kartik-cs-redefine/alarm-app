@@ -1,31 +1,58 @@
 # Final Report: ShakeUp (Alarm App)
 
-## What is Done
-1. **Architecture & Project Setup**: Built with Kotlin, Jetpack Compose, Material 3, Hilt, Room, DataStore, and type-safe Jetpack Navigation.
-2. **Domain & Business Logic**: Alarm models, scheduling calculations (one-time and repeating weekly alarms), shake detection with gravity isolation and debouncing, and math challenge generation.
-3. **Data Persistence**: Room database with type converters for days of week, sensitivity, and challenge types; DataStore preferences for default settings.
-4. **Alarm Core & Reliability**: `AlarmManager.setAlarmClock()`, exact alarm scheduling, foreground service with media playback ringtone and vibration, full-screen lockscreen activity intent, and `BootReceiver` for device reboot resilience.
-5. **UI & Navigation**: Alarm List, Alarm Edit/Detail, Settings, and Full-Screen Ringing activity with pulsing clock animations and real-time shake progress.
+## 1. Done and Verified by Unit Tests
+- **Domain Scheduling Engine (`AlarmCalculator`)**:
+  - One-time alarm scheduling (triggers today if in future, tomorrow if in past; disables itself after trigger).
+  - Repeating alarm scheduling (reschedules for next matching day of week upon dismiss).
+  - Snooze calculation (snoozes for exact specified duration in minutes).
+- **Shake Detection Engine (`ShakeProcessor`)**:
+  - Net acceleration calculation isolating user movement from gravity (~9.81 m/s²).
+  - Debouncing (220ms interval) to ignore rapid acceleration noise.
+  - Exact shake count progress tracking and threshold triggering for `EASY` (6 m/s²), `MEDIUM` (10 m/s²), and `HARD` (15 m/s²).
+- **Extra Dismiss Challenges**:
+  - **Math Challenge (`MathChallengeGenerator`)**: Generates arithmetic equations with computed correct answers.
+  - **Step Counter Challenge (`StepProcessor`)**: Tracks step accumulation up to required step count.
+- **Data Persistence & Room Database**:
+  - `AlarmDao` CRUD operations, order-by-time querying, and TypeConverters for `Set<DayOfWeek>`, `ShakeSensitivity`, and `DismissChallengeType`.
+- **UI ViewModels & State Handling**:
+  - `AlarmListViewModel`: Handles loading, toggling, and deleting alarms.
+  - `AlarmDetailViewModel`: Displays saved alarm time/label when editing, toggles repeat days, updates challenge type, saves and schedules alarms.
+  - `AlarmRingingViewModel`: Retains alarm info and handles initial `null` state in `AlarmService.activeAlarmState` without premature activity closure.
+- **Build Hardening & Release Shrinking**:
+  - R8 minify and resource shrinking enabled in `app/build.gradle.kts`.
+  - Custom `proguard-rules.pro` keep rules for Room, Hilt, and Kotlinx Serialization.
 
-## What is Only Unit-Tested (Not Tested on Real Device)
-- Hardware accelerometer sensor events (`SensorEvent` via `SensorManager`).
+## 2. Done but Only Unit-Tested (Not Verified on Physical Hardware)
+- Hardware accelerometer sensor listener registration (`SensorManager`).
+- Step detector sensor registration (`Sensor.TYPE_STEP_DETECTOR` / `TYPE_STEP_COUNTER`).
 - Audio playback (`MediaPlayer`) and hardware vibration (`Vibrator`).
-- `AlarmManager` OS alarm firing and full-screen intent window presentation on physical lockscreens.
-- Persistent boot broadcast delivery on device restart (`BOOT_COMPLETED`).
+- `AlarmManager.setAlarmClock()` OS system clock triggers and full-screen intent window presentation on physical lock screens.
+- Persistent boot broadcast delivery on actual device restart (`BOOT_COMPLETED` / `LOCKED_BOOT_COMPLETED`).
 
-## Manual Device Test Checklist
-1. **Alarm with Screen Off**: Set an alarm 1 minute in the future, turn off screen, and verify alarm wakes device and fires full-screen intent.
-2. **After Reboot**: Restart device and verify scheduled alarms are successfully re-registered by `BootReceiver`.
-3. **After Snooze**: Tap snooze on a ringing alarm and verify it fires again after the snooze interval.
-4. **Volume Stream**: Verify alarm sounds on the alarm audio stream even in Doze / DND mode (`setBypassDnd(true)`).
-5. **Lock Screen**: Verify ringing activity appears over the keyguard/lock screen.
-6. **Shake Dismiss**: Physically shake the device to complete the required shake count and dismiss the alarm.
-7. **Battery Optimization**: Verify behavior on aggressive OEM battery savers (Xiaomi/Huawei/Samsung) using the settings battery guide.
+## 3. NOT Done
+- **QR Code / Barcode Scan Dismiss Challenge**: Skipped as instructed.
 
-## Needs Human Review
-- **AndroidManifest.xml**: Permissions (`SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `POST_NOTIFICATIONS`, `USE_FULL_SCREEN_INTENT`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`).
-- **Alarm Scheduling & Boot Handling**: Exact alarm clock scheduling and boot broadcast receivers.
+## 4. Needs Human Review
+- **`AndroidManifest.xml` Declarations**:
+  - Permissions: `SCHEDULE_EXACT_ALARM`, `USE_EXACT_ALARM`, `POST_NOTIFICATIONS`, `USE_FULL_SCREEN_INTENT`, `RECEIVE_BOOT_COMPLETED`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_MEDIA_PLAYBACK`, `ACTIVITY_RECOGNITION`.
+  - Component attributes: `android:windowSoftInputMode="adjustResize"`, `android:exported="true/false"`.
+- **Alarm Scheduling & BootReceiver Code**:
+  - `AlarmScheduler.kt` (`setAlarmClock` usage) and `BootReceiver.kt` (rescheduling on boot with direct boot safe try-catch).
+- **`ACTIVITY_RECOGNITION` Runtime Permission Flow**:
+  - Permission needed on Android 10+ (API 29+) for physical step counter sensor usage.
+- **Notification Policy (`setBypassDnd`)**:
+  - `AlarmService.kt` sets `channel.setBypassDnd(true)`. If the app does not request Do Not Disturb Access (`ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS`), review whether this should be retained or removed per target policy.
 
-## Known Risks
-- Aggressive OEM battery management (e.g., MIUI/EMUI/ColorOS) may kill foreground services or restrict exact alarms unless the app is manually whitelisted in battery settings.
-- Missing runtime permissions (`SCHEDULE_EXACT_ALARM` on Android 12+) will fallback to inexact/allow-while-idle alarms.
+## 5. Manual Real-Device Test Checklist
+- [ ] **Alarm with Screen Off**: Set an alarm 1 minute in future, turn off screen, and verify device wakes and displays `AlarmRingingActivity`.
+- [ ] **After Reboot**: Restart physical device and verify `BootReceiver` reschedules active alarms.
+- [ ] **After Snooze**: Tap Snooze during ringing and verify alarm fires again after the configured snooze interval.
+- [ ] **Lock Screen Presentation**: Verify ringing UI appears over the lock screen without requiring device unlock.
+- [ ] **Shake Dismiss Challenge**: Physically shake device to complete required count and verify alarm stops.
+- [ ] **Step Counter Dismiss Challenge**: Walk required steps on a physical device with step sensor to verify step detection dismiss.
+- [ ] **Math Challenge**: Enter correct answer to dismiss ringing alarm.
+- [ ] **Battery Optimization**: Test alarm reliability on aggressive OEM ROMs (Xiaomi/MIUI, Samsung, Huawei) with background restrictions enabled.
+
+## 6. Known Risks
+- **Aggressive OEM Task Killers**: Manufacturers (Xiaomi, Huawei, Samsung, Oppo) may restrict background services unless manually whitelisted in OEM Battery / Autostart settings.
+- **Exact Alarm Permission Revocation**: On Android 12+, users can revoke exact alarm permissions in System Settings, which falls back to `setAndAllowWhileIdle()`.

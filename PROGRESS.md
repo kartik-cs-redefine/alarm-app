@@ -30,7 +30,10 @@
 - **Open Problems:** None.
 
 ## Item 5: Shake Thresholds Comment
-- **Status:** NOT STARTED
+- **Status:** COMPLETED
+- **Files Changed:** `ShakeProcessor.kt`, `PROGRESS.md`.
+- **Tests Added/Passing:** All 25 unit tests passing.
+- **Open Problems:** None.
 
 ## Item 6: Honest FINAL_REPORT.md
 - **Status:** NOT STARTED
