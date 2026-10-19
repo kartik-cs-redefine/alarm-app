@@ -32,6 +32,9 @@
     <string name="challenge_shake">Shake Phone</string>
     <string name="challenge_math">Math Problem</string>
     <string name="math_answer_label">Enter Answer</string>
+    <string name="battery_optimization_title">Battery Optimization &amp; OEM Settings</string>
+    <string name="battery_optimization_desc">To ensure alarms ring reliably, please disable battery optimization and allow background execution for ShakeUp in your device settings.</string>
+    <string name="open_battery_settings">Open Battery Settings</string>
     <string name="permission_notification_title">Notification Permission Required</string>
     <string name="permission_notification_message">Notification permission is required to sound alarms reliably.</string>
     <string name="permission_exact_alarm_title">Exact Alarm Permission Required</string>

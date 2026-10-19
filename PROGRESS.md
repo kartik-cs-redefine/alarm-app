@@ -51,9 +51,9 @@
 - **Open Problems:** None.
 
 ## Phase 8: UI polish
-- **Status:** NOT STARTED
-- **Files Changed:** None.
-- **Tests Added:** None.
+- **Status:** COMPLETED
+- **Files Changed:** `AlarmRingingScreen.kt`, `PROGRESS.md`
+- **Tests Added:** Existing unit tests verified and passing.
 - **Open Problems:** None.
 
 ## Phase 9: Hardening
