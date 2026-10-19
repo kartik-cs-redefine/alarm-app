@@ -12,7 +12,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
@@ -107,20 +107,19 @@ fun MainNavigation(
     onRequestPermission: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    BoxWithConstraints(modifier = modifier) {
-        val isTwoPane = maxWidth >= 600.dp
+    val configuration = LocalConfiguration.current
+    val isTwoPane = configuration.screenWidthDp.dp >= 600.dp
 
-        if (isTwoPane) {
-            TwoPaneAdaptiveLayout(
-                onRequestPermission = onRequestPermission,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            SinglePaneNavigation(
-                onRequestPermission = onRequestPermission,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+    if (isTwoPane) {
+        TwoPaneAdaptiveLayout(
+            onRequestPermission = onRequestPermission,
+            modifier = modifier
+        )
+    } else {
+        SinglePaneNavigation(
+            onRequestPermission = onRequestPermission,
+            modifier = modifier
+        )
     }
 }
 

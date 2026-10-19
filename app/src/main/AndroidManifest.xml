@@ -39,6 +39,11 @@
             </intent-filter>
         </activity>
 
+        <!-- Test Activity for UI unit testing -->
+        <activity
+            android:name=".TestActivity"
+            android:exported="false" />
+
         <!-- Fullscreen Ringing Activity when alarm triggers -->
         <activity
             android:name=".alarm.AlarmRingingActivity"
